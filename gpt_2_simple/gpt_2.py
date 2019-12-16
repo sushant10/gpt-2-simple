@@ -354,7 +354,7 @@ def finetune(sess,
                         time=time.time() - start_time,
                         loss=v_loss,
                         avg=avg_loss[0] / avg_loss[1],
-                        exp=np.exp(avg_loss[0] / avg_loss[1]))
+                        exp=np.exp(avg_loss[0] / avg_loss[1])))
                 loss_arr.append((avg_loss[0]/avg_loss[1], np.exp(avg_loss[0] / avg_loss[1])))
             counter += 1
     except KeyboardInterrupt:
