@@ -156,7 +156,7 @@ def finetune(sess,
     assert model_name not in ['774M', '1558M'] or multi_gpu, "Currently, a modern single GPU cannot finetune the 774M GPT-2 model or larger."
 
     SAMPLE_DIR = 'samples'
-
+    loss_arr = []
     checkpoint_path = os.path.join(checkpoint_dir, run_name)
 
     def maketree(path):
@@ -324,7 +324,7 @@ def finetune(sess,
         while True:
             if steps > 0 and counter == (counter_base + steps):
                 save()
-                return
+                return loss_arr
             if (counter - 1) % save_every == 0 and counter > 1:
                 save()
             if (counter - 1) % sample_every == 0 and counter > 1:
@@ -348,13 +348,14 @@ def finetune(sess,
                             avg_loss[1] * 0.99 + 1.0)
 
                 print(
-                    '[{counter} | {time:2.2f}] loss={loss:2.2f} avg={avg:2.2f}'
+                    '[{counter} | {time:2.2f}] loss={loss:2.2f} avg={avg:2.2f} perp={exp:2.2f}'
                     .format(
                         counter=counter,
                         time=time.time() - start_time,
                         loss=v_loss,
-                        avg=avg_loss[0] / avg_loss[1]))
-
+                        avg=avg_loss[0] / avg_loss[1])
+                        exp=np.exp(avg_loss[0] / avg_loss[1]))
+                loss_arr.append((avg_loss[0]/avg_loss[1], np.exp(avg_loss[0] / avg_loss[1])))
             counter += 1
     except KeyboardInterrupt:
         print('interrupted')
